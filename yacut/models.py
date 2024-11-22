@@ -22,8 +22,9 @@ class URLMap(db.Model):
         """Метод создает словарь из атрибутов объекта."""
         return dict(
             url=self.original,
-            short_link=url_for('redirect_short_url', url=self.short,
-                               _external=True)
+            short_link=url_for(
+                'redirect_short_url', url=self.short, _external=True
+            )
         )
 
     @staticmethod
@@ -51,9 +52,13 @@ class URLMap(db.Model):
         elif not data.get('custom_id'):
             data['custom_id'] = URLMap.get_unique_short_id()
         elif re.search(PATTERN_FOR_CHECK_URL, data['custom_id']) is None:
-            raise URLValidationError('Указано недопустимое имя для короткой ссылки')
+            raise URLValidationError(
+                'Указано недопустимое имя для короткой ссылки'
+            )
         elif URLMap.get_obj_by_short(data['custom_id']) is not None:
-            raise URLValidationError('Предложенный вариант короткой ссылки уже существует.')
+            raise URLValidationError(
+                'Предложенный вариант короткой ссылки уже существует.'
+            )
         return data
 
     @staticmethod
