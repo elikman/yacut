@@ -1,35 +1,30 @@
-from flask import flash, redirect, render_template
-from . import app, db
-from .forms import LinkForm
-from .models import URLMap
-from .utils import get_unique_short_id, correct_short
+from flask import flash, redirect, render_template, url_for
+
+from yacut import app
+from yacut.error_handler import URLValidationError
+from yacut.forms import URLForm
+from yacut.models import URLMap
 
 
-@app.route('/', methods=['GET', 'POST'])
-def index_view():
-    form = LinkForm()
+@app.route('/', methods=('GET', 'POST'))
+def page_for_generate_url():
+    """Отображает форму для генерации короткой ссылки."""
+    form = URLForm()
     if form.validate_on_submit():
-        custom_id = form.custom_id.data
-        if custom_id:
-            if URLMap.query.filter_by(short=custom_id).first():
-                flash(f'Имя {custom_id} уже занято!', 'error')
-                return render_template('main.html', form=form)
-            elif not correct_short(custom_id):
-                flash('Указано недопустимое имя для короткой ссылки', 'error')
-                return render_template('main.html', form=form)
-        else:
-            custom_id = get_unique_short_id()
-        link = URLMap(
-            original=form.original_link.data,
-            short=custom_id
-        )
-        db.session.add(link)
-        db.session.commit()
-        return render_template('main.html', form=form, link=link)
-    return render_template('main.html', form=form)
+        data = dict(url=form.original_link.data, custom_id=form.custom_id.data)
+        try:
+            url_obj = URLMap.create_obj(data)
+        except URLValidationError as error:
+            flash(error.message, 'error')
+            return render_template('index.html', form=form)
+        flash(url_for('redirect_short_url', url=url_obj.short, _external=True),
+              'url')
+    return render_template('index.html', form=form)
 
 
-@app.route('/<path:link>')
-def redirect_view(link):
-    link = URLMap.query.filter_by(short=link).first_or_404()
-    return redirect(link.original)
+@app.route('/<string:url>')
+def redirect_short_url(url):
+    """Выполняет переадресацию с короткой ссылки на оригинальную."""
+    return redirect(
+        URLMap.query.filter_by(short=url).first_or_404().original
+    )
