@@ -11,15 +11,16 @@ from .constants import ERROR1, ERROR2
 def add_link():
     data = request.get_json()
     if data is None:
-        return jsonify({'error': 'Отсутствует тело запроса'}), 400
+        return jsonify({'error': ERROR_MISSING_BODY}), 400
     elif 'url' not in data:
-        return jsonify({'error': '"url" является обязательным полем!'}), 400
+        return jsonify({'error': ERROR_MISSING_URL}), 400
 
     if data.get('custom_id'):
         if len(data['custom_id']) > 16 or not correct_short(data['custom_id']):
-            return jsonify({'error': ERROR2}), 400
+            return jsonify({'error': ERROR_INVALID_CUSTOM_ID}), 400
         elif URLMap.query.filter_by(short=data['custom_id']).first() is not None:
-            return jsonify({'error': ERROR1}), 400
+            error_message = ERROR_CUSTOM_ID_TAKEN.format(custom_id=data['custom_id'])
+            return jsonify({'error': error_message}), 400
     else:
         data['custom_id'] = get_unique_short_id()
 
