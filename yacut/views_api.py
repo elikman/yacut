@@ -4,7 +4,7 @@ from http import HTTPStatus
 from . import app, db
 from .models import URLMap
 from .utils import get_unique_short_id, correct_short
-from .constants import ERROR1, ERROR2
+from .constants import ERROR_CUSTOM_ID_TAKEN, ERROR_INVALID_CUSTOM_ID, ERROR_MISSING_BODY,  ERROR_MISSING_URL
 
 
 @app.route('/api/id/', methods=['POST'])
