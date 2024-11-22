@@ -17,5 +17,7 @@ class URLMap(db.Model):
     def to_dict(self):
         return dict(
             url=self.original,
-            short_link=url_for('redirect_view', link=self.short, _external=True)
+            short_link=url_for('redirect_view',
+                               link=self.short,
+                               _external=True)
         )
