@@ -20,12 +20,12 @@ class URLMap(db.Model):
 
     def to_dict(self):
         """Метод создает словарь из атрибутов объекта."""
-        return dict(
-            url=self.original,
-            short_link=url_for(
+        return {
+            'url': self.original,
+            'short_link': url_for(
                 'redirect_short_url', url=self.short, _external=True
             )
-        )
+        }
 
     @staticmethod
     def get_unique_short_id():
@@ -47,9 +47,9 @@ class URLMap(db.Model):
         """Валидация полей модели."""
         if not data:
             raise URLValidationError('Отсутствует тело запроса')
-        elif 'url' not in data:
+        if 'url' not in data:
             raise URLValidationError('"url" является обязательным полем!')
-        elif not data.get('custom_id'):
+        if not data.get('custom_id'):
             data['custom_id'] = URLMap.get_unique_short_id()
         elif re.search(PATTERN_FOR_CHECK_URL, data['custom_id']) is None:
             raise URLValidationError(
