@@ -4,6 +4,7 @@ from .forms import LinkForm
 from .models import URLMap
 from .utils import get_unique_short_id, correct_short
 
+
 @app.route('/', methods=['GET', 'POST'])
 def index_view():
     form = LinkForm()
@@ -26,6 +27,7 @@ def index_view():
         db.session.commit()
         return render_template('main.html', form=form, link=link)
     return render_template('main.html', form=form)
+
 
 @app.route('/<path:link>')
 def redirect_view(link):
