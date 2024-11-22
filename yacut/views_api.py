@@ -14,7 +14,6 @@ def add_link():
         raise InvalidAPIUsage("Отсутствует тело запроса")
     elif 'url' not in data:
         raise InvalidAPIUsage('"url" является обязательным полем!')
-<<<<<<< HEAD
     if data.get('custom_id'):
         if len(data['custom_id']) > 16 or not correct_short(data['custom_id']):
             raise InvalidAPIUsage('Указано недопустимое имя для короткой ссылки')
@@ -27,7 +26,6 @@ def add_link():
     db.session.add(link)
     db.session.commit()
     return jsonify(link.to_dict()), HTTPStatus.CREATED
-=======
     if 'custom_id' not in data or not data['custom_id']:
         new_short_url = create_random_short_url()
         add_to_database(data['url'], new_short_url)
@@ -51,7 +49,6 @@ def add_link():
             endpoint='get_unique_short_id',
             _external=True,
             _scheme='http') + data['custom_id']}), STATUS_CODE_CREATED
->>>>>>> ac8547aa6ace03c7c25ed9c8276998e368f5f68a
 
 
 @app.route('/api/id/<path:short_id>/', methods=['GET'])
