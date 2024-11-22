@@ -4,7 +4,7 @@ from http import HTTPStatus
 from . import app, db
 from .models import URLMap
 from .utils import get_unique_short_id, correct_short
-from .constants import ERROR1
+from .constants import ERROR1, ERROR2
 
 
 @app.route('/api/id/', methods=['POST'])
@@ -17,7 +17,7 @@ def add_link():
 
     if data.get('custom_id'):
         if len(data['custom_id']) > 16 or not correct_short(data['custom_id']):
-            return jsonify({'error': 'Указано недопустимое имя для короткой ссылки'}), 400
+            return jsonify({'error': ERROR2}), 400
         elif URLMap.query.filter_by(short=data['custom_id']).first() is not None:
             return jsonify({'error': ERROR1}), 400
     else:
