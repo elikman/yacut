@@ -16,8 +16,14 @@ def add_link():
         raise InvalidAPIUsage('"url" является обязательным полем!')
     if data.get('custom_id'):
         if len(data['custom_id']) > 16 or not correct_short(data['custom_id']):
-            raise InvalidAPIUsage('Указано недопустимое имя для короткой ссылки')
-        elif URLMap.query.filter_by(short=data['custom_id']).first() is not None:
+            raise InvalidAPIUsage(
+                'Указано недопустимое имя для короткой ссылки'
+            )
+        elif URLMap.query.filter_by(
+            short=data[
+            'custom_id'
+            ]
+        ).first() is not None:
             raise InvalidAPIUsage(f'Имя "{data["custom_id"]}" уже занято.')
     else:
         data['custom_id'] = get_unique_short_id()
