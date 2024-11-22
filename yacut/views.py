@@ -1,63 +1,35 @@
-from random import choice
-
-from flask import render_template, redirect, flash, url_for
-
+from flask import flash, redirect, render_template
 from . import app, db
-from .settings import (
-    CREATE_RANDOM_LINK, LENGTH_LINK
-)
-from .forms import URLForm
+from .forms import LinkForm
 from .models import URLMap
-
-
-def create_random_short_url():
-    while True:
-        random_link = ''.join(
-            choice(CREATE_RANDOM_LINK) for _ in range(LENGTH_LINK))
-
-        if not URLMap.query.filter_by(short=random_link).first():
-            return random_link
-
-
-def add_to_database(url, short_link=None):
-    if short_link is None:
-        short_link = create_random_short_url()
-    model = URLMap(
-        original=url,
-        short=short_link
-    )
-    db.session.add(model)
-    db.session.commit()
-
-    flash(
-        url_for(
-            'get_unique_short_id',
-            _scheme='http',
-            _external=True
-        )
-        + short_link
-    )
+from .utils import get_unique_short_id, correct_short
 
 
 @app.route('/', methods=['GET', 'POST'])
-def get_unique_short_id():
-    form = URLForm()
+def index_view():
+    form = LinkForm()
     if form.validate_on_submit():
-        if not form.custom_id.data:
-            add_to_database(form.original_link.data)
-            return render_template('content.html', form=form)
+        custom_id = form.custom_id.data
+        if custom_id:
+            if URLMap.query.filter_by(short=custom_id).first():
+                flash(f'Имя {custom_id} уже занято!')
+                return render_template('main.html', form=form)
+            elif not correct_short(custom_id):
+                flash('Указано недопустимое имя для короткой ссылки')
+                return render_template('main.html', form=form)
+        else:
+            custom_id = get_unique_short_id()
+        link = URLMap(
+            original=form.original_link.data,
+            short=custom_id
+        )
+        db.session.add(link)
+        db.session.commit()
+        return render_template('main.html', form=form, link=link)
+    return render_template('main.html', form=form)
 
-        new_short_url = form.custom_id.data
-        if URLMap.query.filter_by(short=new_short_url).first():
-            flash('Предложенный вариант короткой ссылки уже существует.')
-            return render_template('content.html', form=form)
-        add_to_database(form.original_link.data, new_short_url)
-        return render_template('content.html', form=form)
-    return render_template('content.html', form=form)
 
-
-@app.route('/<string:short_id>', strict_slashes=False)
-def redirect_func(short_id):
-    return redirect(
-        URLMap.query.filter_by(short=short_id).first_or_404().original,
-    )
+@app.route('/<path:link>')
+def redirect_view(link):
+    link = URLMap.query.filter_by(short=link).first_or_404()
+    return redirect(link.original)
