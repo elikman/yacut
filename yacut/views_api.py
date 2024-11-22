@@ -29,7 +29,9 @@ def add_link():
             return jsonify({
                 'error': ERROR_INVALID_CUSTOM_ID
             }), 400
-        elif URLMap.query.filter_by(short=data['custom_id']).first() is not None:
+        elif URLMap.query.filter_by(
+            short=data['custom_id']
+        ).first() is not None:
             error_message = ERROR_CUSTOM_ID_TAKEN.format(
                 custom_id=data['custom_id']
             )
