@@ -29,7 +29,9 @@ def create_id():
                 _external=True,
                 _scheme='http') + new_short_url}), STATUS_CODE_CREATED
     if URLMap.query.filter_by(short=data['custom_id']).first():
-        raise InvalidAPIUsage('Предложенный вариант короткой ссылки уже существует.')
+        raise InvalidAPIUsage(
+            'Предложенный вариант короткой ссылки уже существует.'
+            )
     if (not re.match(REGEX, data['custom_id'])
             or len(data['custom_id']) > MAX_CUSTOM_LINK_LENGTH):
         raise InvalidAPIUsage('Указано недопустимое имя для короткой ссылки')
