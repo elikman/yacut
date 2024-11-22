@@ -18,7 +18,8 @@ def add_link():
         if len(data['custom_id']) > 16 or not correct_short(data['custom_id']):
             return jsonify({'error': 'Указано недопустимое имя для короткой ссылки'}), 400
         elif URLMap.query.filter_by(short=data['custom_id']).first() is not None:
-            return jsonify({'error': f'Имя "{data["custom_id"]}" уже занято.'}), 400
+            error_message = f'Имя "{data["custom_id"]}" уже занято.'
+            return jsonify({'error': error_message}), 400
     else:
         data['custom_id'] = get_unique_short_id()
 
@@ -35,6 +36,8 @@ def get_opinion(short_id):
     link = URLMap.query.filter_by(short=short_id).first()
 
     if link is None:
-        return jsonify({'error': 'Указанный id не найден'}), HTTPStatus.NOT_FOUND
+        error_message = 'Указанный id не найден'
+        return jsonify({'error': error_message}), HTTPStatus.NOT_FOUND
 
     return jsonify({'url': link.original}), HTTPStatus.OK
+
