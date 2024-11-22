@@ -19,10 +19,9 @@ def get_original_url(url):
 @app.route('/api/id/', methods=('POST',))
 def generate_short_url():
     """Метод API для генерации короткой ссылки."""
-    data = request.get_json()
-    if not data:
-        raise InvalidAPIUsage('Отсутствует тело запроса',
-                              HTTPStatus.BAD_REQUEST)
+    data = request.get_json(force=True, silent=True)
+    if data is None:
+        raise InvalidAPIUsage('Отсутствует тело запроса')
     try:
         url_obj = URLMap.create_obj(data)
     except URLValidationError as error:
