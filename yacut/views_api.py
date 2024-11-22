@@ -40,4 +40,3 @@ def get_opinion(short_id):
         return jsonify({'error': error_message}), HTTPStatus.NOT_FOUND
 
     return jsonify({'url': link.original}), HTTPStatus.OK
-
