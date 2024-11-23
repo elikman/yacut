@@ -11,7 +11,10 @@ def page_for_generate_url():
     """Отображает форму для генерации короткой ссылки."""
     form = URLForm()
     if form.validate_on_submit():
-        data = dict(url=form.original_link.data, custom_id=form.custom_id.data)
+        data = {
+            'url': form.original_link.data,
+            'custom_id': form.custom_id.data
+        }
         try:
             url_obj = URLMap.create_obj(data)
         except URLValidationError as error:
