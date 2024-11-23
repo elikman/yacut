@@ -38,11 +38,11 @@ def invalid_api_usage(error):
 @app.errorhandler(404)
 def page_not_found(error):
     """Хендлер для ошибки 404."""
-    return render_template('errors/404.html'), HTTPStatus.NOT_FOUND
+    return render_template("errors/404.html"), HTTPStatus.NOT_FOUND
 
 
 @app.errorhandler(500)
 def internal_error(error):
     """Хендлер для ошибки 500."""
     db.session.rollback()
-    return render_template('errors/500.html'), HTTPStatus.INTERNAL_SERVER_ERROR
+    return render_template("errors/500.html"), HTTPStatus.INTERNAL_SERVER_ERROR
