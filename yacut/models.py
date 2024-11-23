@@ -21,9 +21,9 @@ class URLMap(db.Model):
     def to_dict(self):
         """Метод создает словарь из атрибутов объекта."""
         return {
-            'url': self.original,
-            'short_link': url_for(
-                'redirect_short_url', url=self.short, _external=True
+            "url": self.original,
+            "short_link": url_for(
+                "redirect_short_url", url=self.short, _external=True
             )
         }
 
@@ -46,18 +46,18 @@ class URLMap(db.Model):
     def validate_data(data):
         """Валидация полей модели."""
         if not data:
-            raise URLValidationError('Отсутствует тело запроса')
-        if 'url' not in data:
+            raise URLValidationError("Отсутствует тело запроса")
+        if "url" not in data:
             raise URLValidationError('"url" является обязательным полем!')
-        if not data.get('custom_id'):
+        if not data.get("custom_id"):
             data['custom_id'] = URLMap.get_unique_short_id()
-        elif re.search(PATTERN_FOR_CHECK_URL, data['custom_id']) is None:
+        elif re.search(PATTERN_FOR_CHECK_URL, data["custom_id"]) is None:
             raise URLValidationError(
-                'Указано недопустимое имя для короткой ссылки'
+                "Указано недопустимое имя для короткой ссылки"
             )
-        elif URLMap.get_obj_by_short(data['custom_id']) is not None:
+        elif URLMap.get_obj_by_short(data["custom_id"]) is not None:
             raise URLValidationError(
-                'Предложенный вариант короткой ссылки уже существует.'
+                "Предложенный вариант короткой ссылки уже существует."
             )
         return data
 
@@ -65,7 +65,7 @@ class URLMap(db.Model):
     def create_obj(data):
         """Метод для создания объекта."""
         data = URLMap.validate_data(data)
-        url_obj = URLMap(original=data['url'], short=data['custom_id'])
+        url_obj = URLMap(original=data["url"], short=data["custom_id"])
         db.session.add(url_obj)
         db.session.commit()
         return url_obj
